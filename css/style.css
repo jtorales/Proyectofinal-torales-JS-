@@ -11,27 +11,40 @@ h1 {
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
-.conteiner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.tabla-empleados {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
 
-.buttonconteiner{
-    display: flex;
-    padding: 20px;
-    gap: 20px;
-
+.tabla-empleados th, .tabla-empleados td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
 }
 
-.boton {
-    padding: 20px;
-    gap: 20px;
-    color: rgba(0, 255, 64, 0.788);
-    background-color:brown;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+.tabla-empleados th {
+    background-color: #4CAF50;
+    color: white;
 }
 
+.tabla-empleados tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.tabla-empleados tr:hover {
+    background-color: #ddd;
+}
+
+.tabla-empleados td {
+    padding: 10px;
+    font-size: 14px;
+}
+
+.tabla-empleados th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}

@@ -1,94 +1,109 @@
-const empleados = [];
+let empleados = JSON.parse(localStorage.getItem("empleados")) || [];
+
+function guardarEnLocalStorage() {
+    localStorage.setItem("empleados", JSON.stringify(empleados));
+}
 
 function esNumeroValido(input) {
     return !isNaN(input) && input.trim() !== '';
 }
 
-let boton1 = document.getElementById("add_emp")
-      boton1.addEventListener("click", respuestaClick1)
-      function respuestaClick1(){
-        let cantemp = parseInt(prompt("Ingrese la cantidad de empleados"));
-   
-        if (isNaN(cantemp) || cantemp <= 0) {
-            alert("Ingrese un número válido.");
-            return;
-        } 
-   
-        for (let i = 1; i <= cantemp; i++) {
-
-            let legajo = prompt(`Ingrese el legajo del empleado #${i}:`);
-            while (!esNumeroValido(legajo) || legajo <= 0) {
-                alert("El legajo debe ser un número válido mayor que 0.");
-                legajo = prompt(`Ingrese el legajo del empleado #${i}:`);
-            }
-
-            let nombre = prompt(`Ingrese el nombre del empleado #${i}:`);
-   
-            while (!nombre.trim()) {
-                alert("El nombre no puede estar vacío.");
-                nombre = prompt(`Ingrese el nombre del empleado #${i}:`);
-            }
-   
-            let sueldo = prompt(`Ingrese el sueldo del empleado #${i}:`);
-   
-            while (!esNumeroValido(sueldo) || sueldo <= 0) {
-                alert("El sueldo debe ser un número válido mayor que 0.");
-                sueldo = prompt(`Ingrese el sueldo del empleado #${i}:`);
-            }
-            legajo = parseInt(legajo);
-            sueldo = parseFloat(sueldo);
-   
-            empleados.push({ legajo: legajo, nombre: nombre.trim(), sueldo: sueldo });
-        }
-   
-        alert("Datos de empleados ingresados exitosamente.");
+document.getElementById("add_emp").addEventListener("click", function() {
+    let legajo = document.getElementById("legajo").value;
+    if (!esNumeroValido(legajo) || legajo <= 0) {
+        document.getElementById("resultado").textContent = "El legajo debe ser un número válido mayor que 0.";
+        return;
     }
-   
 
-let boton2 = document.getElementById("borrar")
-      boton2.addEventListener("click", respuestaClick2)
-      function respuestaClick2(){
-      let legajo = parseInt(prompt("Ingrese el legajo a borrar:"));
+    let nombre = document.getElementById("nombre").value;
+    if (!nombre.trim()) {
+        document.getElementById("resultado").textContent = "El nombre no puede estar vacío.";
+        return;
+    }
 
-      if (isNaN(legajo)) {
-        alert("Por favor, ingrese un valor numérico válido.");
-        return -1;
+    let sueldo = document.getElementById("sueldo").value;
+    if (!esNumeroValido(sueldo) || sueldo <= 0) {
+        document.getElementById("resultado").textContent = "El sueldo debe ser un número válido mayor que 0.";
+        return;
+    }
+
+    legajo = parseInt(legajo);
+    sueldo = parseFloat(sueldo);
+
+    empleados.push({ legajo: legajo, nombre: nombre.trim(), sueldo: sueldo });
+
+    guardarEnLocalStorage();
+
+    document.getElementById("resultado").textContent = `Empleado ${nombre} agregado exitosamente.`;
+
+    document.getElementById("legajo").value = '';
+    document.getElementById("nombre").value = '';
+    document.getElementById("sueldo").value = '';
+});
+
+document.getElementById("borrar").addEventListener("click", function() {
+    let legajo = parseInt(document.getElementById("legajo_borrar").value);
+
+    if (isNaN(legajo)) {
+        document.getElementById("resultado").textContent = "Por favor, ingrese un valor numérico válido.";
+        return;
     }
 
     const index = empleados.findIndex(obj => obj.legajo === legajo);
 
     if (index !== -1) {
         empleados.splice(index, 1);
-        alert(`Valor ${legajo} encontrado en la posición ${index} y eliminado.`);
+        guardarEnLocalStorage(); 
+        document.getElementById("resultado").textContent = `Empleado con legajo ${legajo} eliminado.`;
     } else {
-        alert(`Valor ${legajo} no encontrado.`);
+        document.getElementById("resultado").textContent = `Empleado con legajo ${legajo} no encontrado.`;
     }
 
-    return index;
-}
+    document.getElementById("legajo_borrar").value = ''; 
+});
 
+document.getElementById("mostrar").addEventListener("click", function() {
+    const resultado = document.getElementById("resultado");
+    resultado.innerHTML = "";
 
+    if (empleados.length === 0) {
+        resultado.textContent = "No hay empleados para mostrar.";
+        return;
+    }
 
-let boton3 = document.getElementById("mostrar")
-      boton3.addEventListener("click", respuestaClick3)
-      function respuestaClick3(){
-        console.table(empleados);
-        const cadenaJSON = JSON.stringify(empleados, null, 2); 
-        alert(cadenaJSON);
-      }
+    const table = document.createElement("table");
+    table.className = "tabla-empleados";
 
-let boton4 = document.getElementById("max_sueldo")
-      boton4.addEventListener("click", respuestaClick4)
-      function respuestaClick4(){
-      const valores = empleados.map((obj) => obj.sueldo);
-      const numeroMasAlto = Math.max(...valores);    
-      alert('El sueldo más alto es: '+ numeroMasAlto);
-      }
+    const headers = ["Legajo", "Nombre", "Sueldo"];
+    const tr = document.createElement("tr");
+    headers.forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        tr.appendChild(th);
+    });
+    table.appendChild(tr);
 
-let boton5 = document.getElementById("min_sueldo")
-      boton5.addEventListener("click", respuestaClick5)
-      function respuestaClick5(){
-        const valores = empleados.map((obj) => obj.sueldo);
-        const numeroMasBajo = Math.min(...valores);    
-        alert('El sueldo más bajo es: '+ numeroMasBajo);  
-      }
+    empleados.forEach(emp => {
+        const tr = document.createElement("tr");
+        Object.values(emp).forEach(val => {
+            const td = document.createElement("td");
+            td.textContent = val;
+            tr.appendChild(td);
+        });
+        table.appendChild(tr);
+    });
+
+    resultado.appendChild(table);
+});
+
+document.getElementById("max_sueldo").addEventListener("click", function() {
+    const valores = empleados.map((obj) => obj.sueldo);
+    const numeroMasAlto = Math.max(...valores);
+    document.getElementById("resultado").textContent = 'El sueldo más alto es: ' + numeroMasAlto;
+});
+
+document.getElementById("min_sueldo").addEventListener("click", function() {
+    const valores = empleados.map((obj) => obj.sueldo);
+    const numeroMasBajo = Math.min(...valores);
+    document.getElementById("resultado").textContent = 'El sueldo más bajo es: ' + numeroMasBajo;
+});
