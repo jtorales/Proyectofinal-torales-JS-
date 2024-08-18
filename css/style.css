@@ -28,7 +28,7 @@ h1 {
     color: white;
 }
 
-.tabla-empleados tr:nth-child(even) {
+.tabla-empleados tr {
     background-color: #f2f2f2;
 }
 
